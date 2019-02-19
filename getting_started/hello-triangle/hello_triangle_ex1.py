@@ -71,24 +71,46 @@ def main():
     glDeleteShader(vertex_shader)
     glDeleteShader(fragment_shader)
 
-    vertices = np.array([-0.5, -0.5, 0,
-                         0.5, -0.5, 0,
-                         0, 0.5, 0], dtype=np.float32)
+    vertices = np.array([
+                        # triangle a
+                        -1, -1, 0,
+                        -1, 0, 0,
+                        0, -1, 0,
+                        # triangle b
+                        0, -1, 0,
+                        1, 0, 0,
+                        1, -1, 0
+                        ], dtype=np.float32)
 
+    indices = np.array([
+                        0, 1, 3,
+                        1, 2, 3
+                       ],dtype=np.uint32)
+
+
+    # generate buffers
     VAO = glGenVertexArrays(1)
     VBO = glGenBuffers(1)
+    EBO = glGenBuffers(1)
 
+    # vertex array buffer
     glBindVertexArray(VAO)
 
+    # vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO)
     glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+
+    # element array buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO)
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * np.dtype(np.float32).itemsize, None)
     glEnableVertexAttribArray(0)
 
     # unbind buffer and vertex array objects
-    glBindBuffer(GL_ARRAY_BUFFER, 0)
     glBindVertexArray(0)
+    #glBindBuffer(GL_ARRAY_BUFFER, 0)
+    #glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
 
 
     # Loop until the user closes the window
@@ -99,7 +121,10 @@ def main():
 
         glUseProgram(shader_program)
         glBindVertexArray(VAO)
-        glDrawArrays(GL_TRIANGLES, 0, 3)
+        #glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        #glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, None)
+        glDrawArrays(GL_TRIANGLES, 0, 12)
+        glBindVertexArray(0)
 
         # Swap front and back buffers
         swap_buffers(window)
