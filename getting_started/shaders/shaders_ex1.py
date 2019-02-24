@@ -28,7 +28,7 @@ def main():
     make_context_current(window)
 
     # shaders
-    shader = Shader('vertex.glsl', 'fragment.glsl')
+    shader = Shader('vertex_ex1.glsl', 'fragment.glsl')
 
     vertices = np.array([
                         # position      # color

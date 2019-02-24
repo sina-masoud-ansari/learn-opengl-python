@@ -28,7 +28,7 @@ def main():
     make_context_current(window)
 
     # shaders
-    shader = Shader('vertex.glsl', 'fragment.glsl')
+    shader = Shader('vertex_ex2.glsl', 'fragment.glsl')
 
     vertices = np.array([
                         # position      # color
@@ -60,6 +60,7 @@ def main():
     glBindVertexArray(0)
 
     shader.use()
+    shader.set_float3("offset", 0.25, 0, 0)
 
     # Loop until the user closes the window
     while not window_should_close(window):
