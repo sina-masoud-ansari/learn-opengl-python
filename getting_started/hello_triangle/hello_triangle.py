@@ -1,6 +1,7 @@
 from glfw import *
 from OpenGL.GL import *
 import numpy as np
+from ctypes import *
 
 def resize(window, width, height):
     glViewport(0, 0, width, height)
@@ -100,7 +101,7 @@ def main():
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * np.dtype(np.float32).itemsize, None)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(c_float), c_void_p(0))
     glEnableVertexAttribArray(0)
 
     # unbind buffer and vertex array objects
@@ -118,7 +119,7 @@ def main():
         glUseProgram(shader_program)
         glBindVertexArray(VAO)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, None)
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, c_void_p(0))
         glBindVertexArray(0)
 
         # Swap front and back buffers
