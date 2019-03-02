@@ -156,6 +156,11 @@ def main():
     # projection
     projection = glm.perspective(glm.radians(45.), screen_width/float(screen_height), 0.1, 100.)
 
+    # cube translations
+    np.random.seed(13)
+    positions = np.random.rand(10, 3) * 2 - 1
+    #print(positions)
+
 
     # Loop until the user closes the window
     while not window_should_close(window):
@@ -173,18 +178,25 @@ def main():
         glBindTexture(GL_TEXTURE_2D, texture2)
 
         glBindVertexArray(VAO)
-
-        # set transformations
-        model = glm.mat4(1.0)
-        model = glm.rotate(model, get_time() * glm.radians(50.), glm.vec3(0.5, 1., 0.))
-
-        # update transformations
-        shader.set_mat4('model', model)
         shader.set_mat4('view', view)
         shader.set_mat4('projection', projection)
 
-        #glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, c_void_p(0))
-        glDrawArrays(GL_TRIANGLES, 0, 36)
+        for i in range(positions.shape[0]):
+
+            x, y, z = positions[i]
+            # set transformations
+            model = glm.mat4(1.0)
+            model = glm.translate(model, glm.vec3(x, y, z))
+            model = glm.rotate(model, (i % 3) * get_time() * glm.radians(i * 20.), glm.vec3(1., 0.3, 0.5))
+            model = glm.scale(model, glm.vec3(0.3, 0.3, 0.3))
+
+
+            # update transformations
+            shader.set_mat4('model', model)
+
+
+            #glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, c_void_p(0))
+            glDrawArrays(GL_TRIANGLES, 0, 36)
 
         # Swap front and back buffers
         swap_buffers(window)
@@ -195,6 +207,7 @@ def main():
     glDeleteVertexArrays(1, VAO)
     glDeleteBuffers(1, VBO)
     glDeleteBuffers(1, EBO)
+
 
     terminate()
 
