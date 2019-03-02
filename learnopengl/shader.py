@@ -1,5 +1,6 @@
 from OpenGL.GL import *
 from ctypes import *
+import glm
 
 class Shader():
 
@@ -49,3 +50,6 @@ class Shader():
 
     def set_float3(self, name, v0=0., v1=0., v2=0.):
         glUniform3f(self.get_uniform_location(name), c_float(v0), c_float(v1), c_float(v2))
+
+    def set_mat4(self, name, value, count=1, transpose=GL_FALSE):
+        glUniformMatrix4fv(self.get_uniform_location(name), count, transpose, glm.value_ptr(value))
