@@ -33,14 +33,49 @@ def main():
 
     # shaders
     shader = Shader('vertex.glsl', 'fragment.glsl')
-
     vertices = np.array([
-             #positions        #colors          #texture coords
-             0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   1.0, 1.0,   # top right
-             0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   1.0, 0.0,   # bottom right
-            -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0,   # bottom left
-            -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 1.0    # top left
-            ], dtype=np.float32)
+        -0.5, -0.5, -0.5,  0.0, 0.0,
+         0.5, -0.5, -0.5,  1.0, 0.0,
+         0.5,  0.5, -0.5,  1.0, 1.0,
+         0.5,  0.5, -0.5,  1.0, 1.0,
+        -0.5,  0.5, -0.5,  0.0, 1.0,
+        -0.5, -0.5, -0.5,  0.0, 0.0,
+    
+        -0.5, -0.5,  0.5,  0.0, 0.0,
+         0.5, -0.5,  0.5,  1.0, 0.0,
+         0.5,  0.5,  0.5,  1.0, 1.0,
+         0.5,  0.5,  0.5,  1.0, 1.0,
+        -0.5,  0.5,  0.5,  0.0, 1.0,
+        -0.5, -0.5,  0.5,  0.0, 0.0,
+    
+        -0.5,  0.5,  0.5,  1.0, 0.0,
+        -0.5,  0.5, -0.5,  1.0, 1.0,
+        -0.5, -0.5, -0.5,  0.0, 1.0,
+        -0.5, -0.5, -0.5,  0.0, 1.0,
+        -0.5, -0.5,  0.5,  0.0, 0.0,
+        -0.5,  0.5,  0.5,  1.0, 0.0,
+    
+         0.5,  0.5,  0.5,  1.0, 0.0,
+         0.5,  0.5, -0.5,  1.0, 1.0,
+         0.5, -0.5, -0.5,  0.0, 1.0,
+         0.5, -0.5, -0.5,  0.0, 1.0,
+         0.5, -0.5,  0.5,  0.0, 0.0,
+         0.5,  0.5,  0.5,  1.0, 0.0,
+    
+        -0.5, -0.5, -0.5,  0.0, 1.0,
+         0.5, -0.5, -0.5,  1.0, 1.0,
+         0.5, -0.5,  0.5,  1.0, 0.0,
+         0.5, -0.5,  0.5,  1.0, 0.0,
+        -0.5, -0.5,  0.5,  0.0, 0.0,
+        -0.5, -0.5, -0.5,  0.0, 1.0,
+    
+        -0.5,  0.5, -0.5,  0.0, 1.0,
+         0.5,  0.5, -0.5,  1.0, 1.0,
+         0.5,  0.5,  0.5,  1.0, 0.0,
+         0.5,  0.5,  0.5,  1.0, 0.0,
+        -0.5,  0.5,  0.5,  0.0, 0.0,
+        -0.5,  0.5, -0.5,  0.0, 1.0
+    ], dtype=np.float32)
 
     indices = np.array([
                 0, 1, 3, # first triangle
@@ -66,8 +101,8 @@ def main():
     glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
 
     # element buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO)
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+    #glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO)
+    #glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
 
     # texture1
     glActiveTexture(GL_TEXTURE0)
@@ -97,15 +132,11 @@ def main():
 
 
     # position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(c_float), c_void_p(0))
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(c_float), c_void_p(0))
     glEnableVertexAttribArray(0)
 
-    # color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(c_float), c_void_p(3 * sizeof(c_float)))
-    glEnableVertexAttribArray(1)
-
     # texture
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(c_float), c_void_p(6 * sizeof(c_float)))
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(c_float), c_void_p(3 * sizeof(c_float)))
     glEnableVertexAttribArray(2)
 
     # unbind buffer and vertex array objects
@@ -115,8 +146,8 @@ def main():
     shader.set_int("texture2", 1)
 
     # model
-    model = glm.mat4(1.0)
-    model = glm.rotate(model, glm.radians(-55.), glm.vec3(1.0, 0, 0))
+    # model = glm.mat4(1.0)
+    # model = glm.rotate(model, glm.radians(-55.), glm.vec3(1.0, 0, 0))
 
     # view
     view = glm.mat4(1.0)
@@ -128,9 +159,12 @@ def main():
 
     # Loop until the user closes the window
     while not window_should_close(window):
+
+        glEnable(GL_DEPTH_TEST)
+
         # Render here, e.g. using pyOpenGL
         glClearColor(0.2, 0.3, 0.3, 1.0)
-        glClear(GL_COLOR_BUFFER_BIT)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         # bind textures
         glActiveTexture(GL_TEXTURE0)
@@ -140,13 +174,17 @@ def main():
 
         glBindVertexArray(VAO)
 
+        # set transformations
+        model = glm.mat4(1.0)
+        model = glm.rotate(model, get_time() * glm.radians(50.), glm.vec3(0.5, 1., 0.))
+
         # update transformations
         shader.set_mat4('model', model)
         shader.set_mat4('view', view)
         shader.set_mat4('projection', projection)
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, c_void_p(0))
-        #glBindVertexArray(0)
+        #glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, c_void_p(0))
+        glDrawArrays(GL_TRIANGLES, 0, 36)
 
         # Swap front and back buffers
         swap_buffers(window)
